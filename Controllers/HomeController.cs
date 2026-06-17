@@ -37,7 +37,7 @@ namespace Likyainn.Controllers
             if (kullanici != null)
             {
                 HttpContext.Session.SetString("UyeGiris", "true");
-                HttpContext.Session.SetString("KullaniciAdi", kullanici.Ad);
+                HttpContext.Session.SetString("KullaniciAdi", kullanici.KullaniciAdi);
 
                 return RedirectToAction("Index");
             }
