@@ -44,6 +44,25 @@ Proje kapsamında kullanıcıların otel odalarını görüntüleyebilmesi ve re
 
 ## Ekran Görüntüleri
 
+### Ana Sayfa
+
+![Ana Sayfa](images/anasayfa.png)
+
+### Odalar
+
+![Odalar](images/odalar.png)
+
+### Üye Girişi
+
+![Üye Girişi](images/uyegirisi.png)
+
+### Rezervasyon Formu
+
+![Rezervasyon Formu](images/rezervasyon.png)
+
+### Admin Paneli
+
+![Admin Paneli](images/adminpaneli.png)
 
 
 
