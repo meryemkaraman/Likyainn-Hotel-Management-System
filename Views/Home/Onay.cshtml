@@ -1,0 +1,268 @@
+﻿ 
+@{
+    ViewData["Title"] = "Ödeme";
+
+    string isim = Context.Request.Query["isim"].ToString() ?? "Misafir";
+    string soyisim = Context.Request.Query["soyisim"].ToString() ?? "";
+    string odaTipi = Context.Request.Query["odaTipi"].ToString() ?? "Oda";
+    string kisiStr = Context.Request.Query["kisi"].ToString() ?? "2";
+    string yatakStr = Context.Request.Query["yatak"].ToString() ?? "1";
+    string giris = Context.Request.Query["giris"].ToString() ?? "";
+    string cikis = Context.Request.Query["cikis"].ToString() ?? "";
+
+    int kisiSayisi = int.TryParse(kisiStr, out var k) ? k : 2;
+    int yatakSayisi = int.TryParse(yatakStr, out var y) ? y : 1;
+
+    var fiyatMap = new Dictionary<string, int>
+    {
+        {"Standart Oda", 1200},
+        {"Suit Oda", 2500},
+        {"Deluxe Oda", 3800},
+        {"Aile Odasi", 4200}
+    };
+    int tabanFiyat = fiyatMap.ContainsKey(odaTipi) ? fiyatMap[odaTipi] : 0;
+    int kisiFiyat = 300, yatakFiyat = 200;
+    int ekKisi = Math.Max(0, kisiSayisi - 2);
+    int ekYatak = Math.Max(0, yatakSayisi - 1);
+    int gecelik = tabanFiyat + (ekKisi * kisiFiyat) + (ekYatak * yatakFiyat);
+
+    int geceSayisi = 1;
+    if (!string.IsNullOrEmpty(giris) && !string.IsNullOrEmpty(cikis))
+    {
+        geceSayisi = Math.Max(1, (int)(DateTime.Parse(cikis) - DateTime.Parse(giris)).TotalDays);
+    }
+    int toplamFiyat = geceSayisi * gecelik;
+}
+
+<div class="section" style="background: var(--kum);">
+    <div class="onay-wrapper">
+        <div class="onay-card">
+
+            <div id="odemeFormu">
+                <div class="kart-icon">💳</div>
+                <h2>Ödeme Bilgileri</h2>
+                <p style="color:var(--metin-orta); font-size:0.95rem; margin-bottom:1.5rem;">
+                    Güvenli SSL bağlantısı ile ödemenizi tamamlayın.
+                </p>
+
+                <div style="background:var(--ege-cok-acik); border-radius:14px;
+                             padding:1rem 1.2rem; margin-bottom:1.5rem; text-align:left;">
+                    <p style="font-size:0.85rem; color:var(--metin-orta); margin-bottom:0.4rem; font-weight:600;">
+                        📋 REZERVASYON ÖZETİ
+                    </p>
+                    <p style="font-size:0.95rem; color:var(--ege-koyu); font-weight:600;">
+                        👤 @isim @soyisim · 🛏️ @odaTipi
+                    </p>
+                    <p style="font-size:0.9rem; color:var(--metin-orta);">
+                        👥 @kisiSayisi kişi · 🛌 @yatakSayisi yatak
+                    </p>
+                    @if (!string.IsNullOrEmpty(giris) && !string.IsNullOrEmpty(cikis))
+                    {
+                        <p style="font-size:0.9rem; color:var(--metin-orta);">
+                            📅 @giris → @cikis (@geceSayisi gece)
+                        </p>
+                    }
+                    <div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px dashed var(--ege-acik);">
+                        <p style="font-size:0.8rem; color:var(--metin-orta);">
+                            Taban: @tabanFiyat.ToString("N0") ₺/gece
+                            @if (ekKisi > 0)
+                            {
+                                <span>· +@ekKisi kişi: @((ekKisi * kisiFiyat).ToString("N0")) ₺</span>
+                            }
+                            @if (ekYatak > 0)
+                            {
+                                <span>· +@ekYatak yatak: @((ekYatak * yatakFiyat).ToString("N0")) ₺</span>
+                            }
+                        </p>
+                        <p style="font-size:1.1rem; font-weight:700; color:var(--ege-koyu);">
+                            💰 @toplamFiyat.ToString("N0") ₺
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group" style="text-align:left;">
+                    <label for="kartNo">Kart Numarası *</label>
+                    <input type="text" id="kartNo" class="form-control"
+                           placeholder="0000 0000 0000 0000"
+                           maxlength="19"
+                           oninput="kartNoFormatla(this)" />
+                </div>
+
+                <div class="form-group" style="text-align:left;">
+                    <label for="kartAd">Kart Üzerindeki Ad Soyad *</label>
+                    <input type="text" id="kartAd" class="form-control"
+                           placeholder="AD SOYAD"
+                           style="text-transform:uppercase;" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="text-align:left;">
+                        <label for="sonKullanma">Son Kullanma Tarihi *</label>
+                        <input type="text" id="sonKullanma" class="form-control"
+                               placeholder="AA/YY" maxlength="5"
+                               oninput="sonKullanmaFormatla(this)" />
+                    </div>
+                    <div class="form-group" style="text-align:left;">
+                        <label for="cvv">CVV / CVC *</label>
+                        <input type="text" id="cvv" class="form-control"
+                               placeholder="•••" maxlength="3" />
+                    </div>
+                </div>
+
+                <div class="error-msg" id="odemeHata"></div>
+
+                <button class="btn-odeme" onclick="odemiTamamla()" style="margin-top:0.8rem;">
+                    🔒 Ödemeyi Tamamla
+                </button>
+
+                <p style="font-size:0.8rem; color:var(--metin-orta); margin-top:1rem;">
+                    🔒 256-bit SSL şifreleme ile güvende
+                </p>
+            </div>
+
+            <div class="degerlendirme-section" id="degerlendirmeBolum">
+                <span class="basari-icon">✅</span>
+                <h2 style="color: var(--ege-koyu);">Rezervasyonunuz Alındı!</h2>
+                <p style="color: var(--metin-orta); margin: 0.5rem 0 1.5rem; font-size:0.95rem;">
+                    Teşekkürler, <strong>@isim @soyisim</strong>!<br>
+                    <strong>@odaTipi</strong> · @kisiSayisi kişi · @yatakSayisi yatak<br>
+                    Rezervasyonunuz başarıyla oluşturuldu.
+                    Onay e-postanızı kontrol edin.
+                </p>
+
+                <hr style="border-color: var(--kum-koyu); margin: 1.5rem 0;" />
+
+                <p style="font-size:1.05rem; font-weight:700; color:var(--ege-koyu); margin-bottom:0.3rem;">
+                    🌟 Bizi Değerlendirin
+                </p>
+                <p style="color:var(--metin-orta); font-size:0.9rem; margin-bottom:0.5rem;">
+                    Deneyiminizi bizimle paylaşın!
+                </p>
+
+                <div class="yildiz-container" id="yildizContainer">
+                    <input type="radio" id="y5" name="yildiz" value="5" />
+                    <label for="y5" onclick="yildizSec(5)">★</label>
+
+                    <input type="radio" id="y4" name="yildiz" value="4" />
+                    <label for="y4" onclick="yildizSec(4)">★</label>
+
+                    <input type="radio" id="y3" name="yildiz" value="3" />
+                    <label for="y3" onclick="yildizSec(3)">★</label>
+
+                    <input type="radio" id="y2" name="yildiz" value="2" />
+                    <label for="y2" onclick="yildizSec(2)">★</label>
+
+                    <input type="radio" id="y1" name="yildiz" value="1" />
+                    <label for="y1" onclick="yildizSec(1)">★</label>
+                </div>
+
+                <div id="mesajTesekkur" class="degerlendirme-mesaj mesaj-tesekkkur">
+                    🎉 Teşekkürler! Harika görüşleriniz için minnettarız. Sizi tekrar ağırlamaktan mutluluk duyarız!
+                </div>
+                <div id="mesajGeri" class="degerlendirme-mesaj mesaj-geri">
+                    💙 Geri bildiriminiz alındı. Deneyiminizi daha iyi hale getirmek için çalışacağız.
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <a href="/Home/Index" class="btn-rezervasyon" style="font-size:0.95rem; padding:0.7rem 2rem;">
+                        🏠 Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function kartNoFormatla(input) {
+            var val = input.value.replace(/\D/g, '').substring(0, 16);
+            var formatted = val.replace(/(.{4})/g, '$1 ').trim();
+            input.value = formatted;
+        }
+
+        function sonKullanmaFormatla(input) {
+            var val = input.value.replace(/\D/g, '').substring(0, 4);
+            if (val.length >= 3) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2);
+            } else {
+                input.value = val;
+            }
+        }
+
+        function odemiTamamla() {
+            var kartNo     = document.getElementById("kartNo").value.replace(/\s/g, '');
+            var kartAd     = document.getElementById("kartAd").value.trim();
+            var sonKullanma = document.getElementById("sonKullanma").value;
+            var cvv        = document.getElementById("cvv").value.trim();
+            var hata       = document.getElementById("odemeHata");
+
+            if (!kartNo || !kartAd || !sonKullanma || !cvv) {
+                hata.style.display = "block";
+                hata.textContent = "⚠️ Lütfen tüm kart bilgilerini doldurun!";
+                return;
+            }
+
+            if (kartNo.length !== 16) {
+                hata.style.display = "block";
+                hata.textContent = "⚠️ Kart numarası 16 haneli olmalıdır!";
+                return;
+            }
+
+            if (cvv.length < 3) {
+                hata.style.display = "block";
+                hata.textContent = "⚠️ CVV 3 haneli olmalıdır!";
+                return;
+            }
+
+                    hata.style.display = "none";
+
+        // Rezervasyonu SQL'e kaydet
+        var rezervasyon = {
+            ad: "@isim",
+            soyad: "@soyisim",
+            telefon: "@Context.Request.Query["telefon"]",
+            odaTipi: "@odaTipi",
+            kisiSayisi: @kisiSayisi,
+            yatakSayisi: @yatakSayisi,
+            girisTarihi: "@giris",
+            cikisTarihi: "@cikis",
+            toplamTutar: @toplamFiyat
+        };
+
+        fetch("/Home/RezervasyonKaydet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(rezervasyon)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                document.getElementById("odemeFormu").style.display = "none";
+                document.getElementById("degerlendirmeBolum").style.display = "block";
+            }
+        });
+        }
+
+        function yildizSec(puan) {
+            var mesajTesekkur = document.getElementById("mesajTesekkur");
+            var mesajGeri     = document.getElementById("mesajGeri");
+
+            mesajTesekkur.style.display = "none";
+            mesajGeri.style.display     = "none";
+
+            if (puan === 5) {
+                mesajTesekkur.style.display = "block";
+            } else {
+                mesajGeri.style.display = "block";
+            }
+
+            setTimeout(function() {
+                document.getElementById("yildizContainer").style.opacity = "0.5";
+                document.getElementById("yildizContainer").style.pointerEvents = "none";
+            }, 300);
+        }
+    </script>
+     
+}

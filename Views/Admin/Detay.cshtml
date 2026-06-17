@@ -1,0 +1,56 @@
+﻿@model Likyainn.Models.Rezervasyon
+
+<h2>Rezervasyon Detayı</h2>
+
+<table class="table table-bordered">
+
+    <tr>
+        <th>Ad</th>
+        <td>@Model.Ad</td>
+    </tr>
+
+    <tr>
+        <th>Soyad</th>
+        <td>@Model.Soyad</td>
+    </tr>
+
+    <tr>
+        <th>Telefon</th>
+        <td>@Model.Telefon</td>
+    </tr>
+
+    <tr>
+        <th>Oda Tipi</th>
+        <td>@Model.OdaTipi</td>
+    </tr>
+
+    <tr>
+        <th>Kişi Sayısı</th>
+        <td>@Model.KisiSayisi</td>
+    </tr>
+
+    <tr>
+        <th>Yatak Sayısı</th>
+        <td>@Model.YatakSayisi</td>
+    </tr>
+
+    <tr>
+        <th>Giriş Tarihi</th>
+        <td>@Model.GirisTarihi.ToShortDateString()</td>
+    </tr>
+
+    <tr>
+        <th>Çıkış Tarihi</th>
+        <td>@Model.CikisTarihi.ToShortDateString()</td>
+    </tr>
+
+    <tr>
+        <th>Toplam Tutar</th>
+        <td>@Model.ToplamTutar ₺</td>
+    </tr>
+
+</table>
+
+<a asp-action="Index" class="btn btn-primary">
+    Geri Dön
+</a>

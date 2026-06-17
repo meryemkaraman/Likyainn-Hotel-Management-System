@@ -1,0 +1,264 @@
+﻿@{
+    ViewData["Title"] = "Rezervasyon";
+
+    string odaTipiParam = Context.Request.Query["odaTipi"].ToString() ?? "";
+}
+
+<div class="section" style="background: var(--kum);">
+    <div class="rezervasyon-wrapper">
+        <div class="rezervasyon-card">
+
+            <h2>📋 Rezervasyon Formu</h2>
+            <p class="rezervasyon-subtitle">
+                Bilgilerinizi doldurun, anında rezervasyonunuzu oluşturalım.
+            </p>
+
+            <h5 style="color:var(--ege-koyu); margin-bottom:1rem; font-size:1rem; font-weight:700;">
+                👤 Kişisel Bilgiler
+            </h5>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="isim">Ad *</label>
+                    <input type="text" id="isim" class="form-control" placeholder="Adınız" />
+                </div>
+                <div class="form-group">
+                    <label for="soyisim">Soyad *</label>
+                    <input type="text" id="soyisim" class="form-control" placeholder="Soyadınız" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="telefon">Telefon *</label>
+                <input type="text" id="telefon" class="form-control" placeholder="5XX XXX XX XX" maxlength="11" minlength="10" inputmode="numeric" />
+            </div>
+
+            <h5 style="color:var(--ege-koyu); margin: 1.5rem 0 1rem; font-size:1rem; font-weight:700;">
+                🛏️ Konaklama Bilgileri
+            </h5>
+
+            <div class="form-group">
+                <label for="odaTipi">Oda Tipi *</label>
+                <select id="odaTipi" class="form-control" onchange="kisiSayisiniGuncelle()">
+                    <option value="">-- Oda Seçin --</option>
+                    <option value="Standart Oda">Standart Oda</option>
+                    <option value="Suit Oda">Suit Oda</option>
+                    <option value="Deluxe Oda">Deluxe Oda</option>
+                    <option value="Aile Odasi">Aile Odası</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="kisiSayisi">Kişi Sayısı *</label>
+                    <select id="kisiSayisi" class="form-control" onchange="yatakSayisiniGuncelle(); hesaplaOzet();">
+                        <option value="">-- Seçin --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="yatakSayisi">Yatak Sayısı *</label>
+                    <select id="yatakSayisi" class="form-control" onchange="hesaplaOzet();">
+                        <option value="">-- Seçin --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="girisT">Giriş Tarihi *</label>
+                    <input type="date" id="girisT" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="cikisT">Çıkış Tarihi *</label>
+                    <input type="date" id="cikisT" class="form-control" />
+                </div>
+            </div>
+
+            <div id="ozetKutu"
+                 style="display:none; background:var(--ege-cok-acik); border-radius:12px;
+                        padding:1rem 1.2rem; margin-top:0.5rem; font-size:0.9rem; color:var(--ege-koyu);">
+                <strong>📊 Rezervasyon Özeti</strong>
+                <div id="ozetIcerik" style="margin-top:0.5rem;"></div>
+            </div>
+
+            <div class="error-msg" id="hataMesaji2"></div>
+
+            <button class="btn-odeme" onclick="odemeGec()">
+                💳 Ödemeye Geç →
+            </button>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var bugun = new Date().toISOString().split('T')[0];
+        document.getElementById("girisT").setAttribute("min", bugun);
+        document.getElementById("cikisT").setAttribute("min", bugun);
+
+        document.getElementById("girisT").addEventListener("change", hesaplaOzet);
+        document.getElementById("cikisT").addEventListener("change", hesaplaOzet);
+        document.getElementById("odaTipi").addEventListener("change", hesaplaOzet);
+        document.getElementById("kisiSayisi").addEventListener("change", hesaplaOzet);
+        document.getElementById("yatakSayisi").addEventListener("change", hesaplaOzet);
+
+        var telefonInput = document.getElementById("telefon");
+        telefonInput.addEventListener("input", function() {
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+        var odaMap = {
+            "standart": "Standart Oda",
+            "suit": "Suit Oda",
+            "deluxe": "Deluxe Oda",
+            "aile": "Aile Odası"
+        };
+
+        var odaKapasite = {
+            "Standart Oda": { maxKisi: 2, maxYatak: 2 },
+            "Suit Oda":     { maxKisi: 2, maxYatak: 2 },
+            "Deluxe Oda":   { maxKisi: 3, maxYatak: 2 },
+            "Aile Odasi":   { maxKisi: 6, maxYatak: 4 }
+        };
+
+        var fiyatlar = {
+            "Standart Oda": 1200,
+            "Suit Oda": 2500,
+            "Deluxe Oda": 3800,
+            "Aile Odasi": 4200
+        };
+
+        var kisiFiyat = 300;
+        var yatakFiyat = 200;
+
+        function kisiSayisiniGuncelle() {
+            var odaTipi = document.getElementById("odaTipi").value;
+            var kisiSelect = document.getElementById("kisiSayisi");
+
+            kisiSelect.innerHTML = "<option value=''>-- Seçin --</option>";
+
+            if (odaTipi && odaKapasite[odaTipi]) {
+                var maxKisi = odaKapasite[odaTipi].maxKisi;
+                for (var i = 1; i <= maxKisi; i++) {
+                    var opt = document.createElement("option");
+                    opt.value = i;
+                    opt.textContent = i + " kişi";
+                    kisiSelect.appendChild(opt);
+                }
+            }
+
+            yatakSayisiniGuncelle();
+        }
+
+        function yatakSayisiniGuncelle() {
+            var odaTipi = document.getElementById("odaTipi").value;
+            var kisi = parseInt(document.getElementById("kisiSayisi").value) || 0;
+            var yatakSelect = document.getElementById("yatakSayisi");
+
+            yatakSelect.innerHTML = "<option value=''>-- Seçin --</option>";
+
+            if (odaTipi && kisi > 0 && odaKapasite[odaTipi]) {
+                var maxYatak = odaKapasite[odaTipi].maxYatak;
+                var minYatak = Math.ceil(kisi / 2);
+                if (minYatak < 1) minYatak = 1;
+                if (minYatak > maxYatak) minYatak = maxYatak;
+
+                for (var i = minYatak; i <= maxYatak; i++) {
+                    var opt = document.createElement("option");
+                    opt.value = i;
+                    opt.textContent = i + " yatak";
+                    yatakSelect.appendChild(opt);
+                }
+            }
+        }
+
+        function hesaplaOzet() {
+            var giris = document.getElementById("girisT").value;
+            var cikis = document.getElementById("cikisT").value;
+            var odaTipi = document.getElementById("odaTipi").value;
+            var kisi = parseInt(document.getElementById("kisiSayisi").value) || 0;
+            var yatak = parseInt(document.getElementById("yatakSayisi").value) || 0;
+
+            if (giris && cikis && odaTipi && kisi && yatak) {
+                var girisDate = new Date(giris);
+                var cikisDate = new Date(cikis);
+                var geceSayisi = Math.round((cikisDate - girisDate) / (1000 * 60 * 60 * 24));
+
+                if (geceSayisi > 0 && fiyatlar[odaTipi]) {
+                    var tabanFiyat = fiyatlar[odaTipi];
+                    var ekKisi = Math.max(0, kisi - 2);
+                    var ekYatak = Math.max(0, yatak - 1);
+                    var gecelik = tabanFiyat + (ekKisi * kisiFiyat) + (ekYatak * yatakFiyat);
+                    var toplam = geceSayisi * gecelik;
+
+                    document.getElementById("ozetKutu").style.display = "block";
+
+                    var detayHtml = "🛏️ <b>" + odaTipi + "</b> · " +
+                        geceSayisi + " gece · " +
+                        kisi + " kişi · " +
+                        yatak + " yatak<br>" +
+                        "<span style='font-size:0.8rem;color:var(--metin-orta);'>" +
+                        "Taban: " + tabanFiyat.toLocaleString('tr-TR') + " ₺";
+
+                    if (ekKisi > 0) {
+                        detayHtml += " · +" + ekKisi + " kişi: " + (ekKisi * kisiFiyat).toLocaleString('tr-TR') + " ₺";
+                    }
+                    if (ekYatak > 0) {
+                        detayHtml += " · +" + ekYatak + " yatak: " + (ekYatak * yatakFiyat).toLocaleString('tr-TR') + " ₺";
+                    }
+                    detayHtml += "</span><br>" +
+                        "<span style='font-size:1.2rem;font-weight:700;color:var(--ege-koyu);'>" +
+                        "💰 Toplam: " + toplam.toLocaleString('tr-TR') + " ₺</span>";
+
+                    document.getElementById("ozetIcerik").innerHTML = detayHtml;
+                }
+            }
+        }
+
+        function odemeGec() {
+            var isim    = document.getElementById("isim").value.trim();
+            var soyisim = document.getElementById("soyisim").value.trim();
+            var telefon = document.getElementById("telefon").value.trim();
+            var odaTipi = document.getElementById("odaTipi").value;
+            var kisi = document.getElementById("kisiSayisi").value;
+            var yatak = document.getElementById("yatakSayisi").value;
+            var girisT  = document.getElementById("girisT").value;
+            var cikisT  = document.getElementById("cikisT").value;
+            var hata    = document.getElementById("hataMesaji2");
+
+            hata.style.display = "none";
+
+            if (!isim || !soyisim || !telefon || !odaTipi || !kisi || !yatak || !girisT || !cikisT) {
+                hata.style.display = "block";
+                hata.textContent = "⚠️ Lütfen tüm alanları doldurun!";
+                return;
+            }
+
+            if (new Date(cikisT) <= new Date(girisT)) {
+                hata.style.display = "block";
+                hata.textContent = "⚠️ Çıkış tarihi, giriş tarihinden sonra olmalıdır!";
+                return;
+            }
+
+            window.location.href = "/Home/Onay?isim=" + encodeURIComponent(isim) +
+                                   "&soyisim=" + encodeURIComponent(soyisim) +
+                                   "&telefon=" + encodeURIComponent(telefon) +
+                                   "&odaTipi=" + encodeURIComponent(odaTipi) +
+                                   "&kisi=" + kisi +
+                                   "&yatak=" + yatak +
+                                   "&giris=" + girisT +
+                                   "&cikis=" + cikisT;
+        }
+    </script>
+    <script>
+        window.onload = function(){
+            var oda = "@odaTipiParam";
+            if(oda){
+                var displayName = odaMap[oda] || oda;
+                document.getElementById("odaTipi").value = displayName;
+                kisiSayisiniGuncelle();
+            }
+        }
+    </script>
+}

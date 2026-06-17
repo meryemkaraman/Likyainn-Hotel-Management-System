@@ -1,0 +1,49 @@
+﻿@model Likyainn.Models.Kullanici
+
+@{
+    ViewData["Title"] = "Üye Ol";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="giris-kapsayici">
+    <div class="giris-kart">
+
+        <div class="giris-icon">📝</div>
+        <h2>Üye Ol</h2>
+        <p class="subtitle">Üye olun, %10 indirim kazanın!</p>
+
+        <form method="post">
+
+            <div class="form-group">
+                <label>Ad</label>
+                <input asp-for="Ad" class="form-control" placeholder="Adınızı girin" />
+            </div>
+
+            <div class="form-group">
+                <label>Soyad</label>
+                <input asp-for="Soyad" class="form-control" placeholder="Soyadınızı girin" />
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="Email" class="form-control" placeholder="Email girin" />
+            </div>
+
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input asp-for="KullaniciAdi" class="form-control" placeholder="Kullanıcı adı" />
+            </div>
+
+            <div class="form-group">
+                <label>Şifre</label>
+                <input asp-for="Sifre" type="password" class="form-control" placeholder="Şifre" />
+            </div>
+
+            <button type="submit" class="btn-primary-custom">
+                🎉 Kayıt Ol
+            </button>
+
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Üye Girişi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="giris-kapsayici">
+    <div class="giris-kart">
+
+        <div class="giris-ikon">🔑</div>
+
+        <h2>Üye Girişi</h2>
+
+        <p class="alt-yazi">
+            Üye girişi yaparak tüm odalarda
+            <strong>%10 indirimden</strong> yararlanın!
+        </p>
+
+        @if (ViewBag.Hata != null)
+        {
+            <div class="hata-mesaj" style="display:block;">
+                @ViewBag.Hata
+            </div>
+        }
+
+        <form method="post" onsubmit="return formKontrol()">
+
+            
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+
+                <input type="text"
+                       id="kullaniciAdi"
+                       name="kullaniciAdi"
+                       class="form-control"
+                       placeholder="Kullanıcı adınızı girin" />
+            </div>
+
+            
+            <div class="form-group">
+                <label>Şifre</label>
+
+                <input type="password"
+                       id="sifre"
+                       name="sifre"
+                       class="form-control"
+                       placeholder="Şifrenizi girin" />
+            </div>
+
+            
+            <div class="hata-mesaj" id="hataMesaji">
+                ❌ Lütfen tüm alanları doldurun.
+            </div>
+
+            
+            <button type="submit" class="btn-giris-yap">
+                🚀 Giriş Yap
+            </button>
+
+        </form>
+
+        <p style="margin-top:1.5rem; font-size:0.85rem; color: var(--metin-orta);">
+            Hesabınız yok mu?
+
+            <a href="/Home/Kayit"
+               style="color: var(--ege-orta); font-weight:600;">
+
+                Üye Ol →
+
+            </a>
+        </p>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+
+        function formKontrol() {
+
+            var kullanici = document.getElementById("kullaniciAdi").value;
+            var sifre = document.getElementById("sifre").value;
+            var hataMesaji = document.getElementById("hataMesaji");
+
+            if (kullanici === "" || sifre === "") {
+
+                hataMesaji.style.display = "block";
+
+                hataMesaji.textContent =
+                    "⚠️ Lütfen tüm alanları doldurun.";
+
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
+
+}

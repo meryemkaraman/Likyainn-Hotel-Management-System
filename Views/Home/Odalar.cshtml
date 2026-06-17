@@ -1,0 +1,972 @@
+﻿ 
+@{
+    ViewData["Title"] = "Odalarımız";
+    bool uyeGiris = Context.Request.Query["uyeGiris"] == "true" || (bool)(ViewBag.UyeGiris ?? false);
+}
+
+<style>
+    .oda-selector {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto 2rem;
+        z-index: 100;
+    }
+
+    .oda-selector-text {
+        background: var(--beyaz);
+        border: 2px solid var(--ege-orta);
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--ege-koyu);
+        cursor: pointer;
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        user-select: none;
+    }
+
+        .oda-selector-text:hover {
+            border-color: var(--altin);
+            box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+        }
+
+    .oda-selector-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: var(--beyaz);
+        border-radius: 14px;
+        box-shadow: 0 12px 40px rgba(26,58,92,0.2);
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease;
+    }
+
+        .oda-selector-dropdown.acik {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+    .oda-selector-option {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--metin-koyu);
+        cursor: pointer;
+        transition: background 0.2s, padding-left 0.2s;
+        border-bottom: 1px solid var(--kum);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .oda-selector-option:last-child {
+            border-bottom: none;
+        }
+
+        .oda-selector-option:hover {
+            background: var(--ege-cok-acik);
+            padding-left: 2rem;
+        }
+
+        .oda-selector-option.secili {
+            background: var(--ege-cok-acik);
+            color: var(--ege-koyu);
+            font-weight: 700;
+        }
+
+        .oda-selector-option .oda-emoji {
+            font-size: 1.8rem;
+        }
+
+    .kup-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .kup-kart {
+        background: var(--beyaz);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 25px rgba(26,58,92,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .kup-kart:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(26,58,92,0.18);
+        }
+
+    .kup-gorsel {
+        aspect-ratio: 4/3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--metin-orta);
+        opacity: 0.5;
+        border-bottom: 1px solid var(--kum);
+        overflow: hidden;
+    }
+
+        .kup-gorsel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .kup-bilgi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        background: var(--ege-cok-acik);
+    }
+
+    .kup-fiyat {
+        font-weight: 700;
+        color: var(--ege-koyu);
+        font-size: 1rem;
+    }
+
+    .kup-m2 {
+        font-size: 0.85rem;
+        color: var(--metin-orta);
+        font-weight: 600;
+    }
+
+    .kup-incele {
+        display: block;
+        width: 100%;
+        padding: 0.7rem;
+        background: linear-gradient(135deg, var(--ege-orta), var(--ege-koyu));
+        color: var(--beyaz);
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        transition: background 0.3s;
+        letter-spacing: 0.3px;
+    }
+
+        .kup-incele:hover {
+            background: linear-gradient(135deg, var(--ege-acik), var(--ege-orta));
+        }
+
+    .secim-yonlendirme {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--metin-orta);
+        font-size: 1.1rem;
+    }
+
+    #detayView {
+        display: none;
+    }
+
+        #detayView.goster {
+            display: block;
+        }
+
+    #detayView {
+        animation: fadeIn 0.4s ease;
+    }
+
+    .detay-view-back {
+        position: sticky;
+        top: 80px;
+        z-index: 10;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--ege-orta);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        transition: color 0.2s;
+        border: none;
+        background: var(--beyaz);
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(26,58,92,0.1);
+    }
+
+        .detay-view-back:hover {
+            color: var(--ege-koyu);
+        }
+
+    .oda-detay-hero-foto {
+        border-radius: 20px;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(26,58,92,0.12);
+    }
+
+    /* FILTRE PANELI */
+    .oda-sayfa-duzeni {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .oda-grid-alani {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .filtre-panel {
+        width: 260px;
+        flex-shrink: 0;
+        background: var(--beyaz);
+        border-radius: 16px;
+        padding: 1.5rem 1.5rem 2.2rem;
+        box-shadow: 0 4px 20px rgba(26,58,92,0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+        .filtre-panel .filtre-ust-baslik {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--ege-koyu);
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .filtre-panel .filtre-alt-baslik {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--metin-orta);
+            margin-bottom: 1rem;
+        }
+
+    .filtre-cizgi-wrap {
+        position: relative;
+        height: 30px;
+        margin: 0.5rem 0 0.8rem;
+    }
+
+        .filtre-cizgi-wrap .filtre-cizgi {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--kum-koyu);
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        .filtre-cizgi-wrap input[type="range"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            pointer-events: none;
+            margin: 0;
+        }
+
+            .filtre-cizgi-wrap input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: var(--ege-orta);
+                cursor: pointer;
+                pointer-events: auto;
+                border: 3px solid var(--beyaz);
+                box-shadow: 0 2px 6px rgba(26,58,92,0.25);
+                transition: box-shadow 0.2s;
+            }
+
+                .filtre-cizgi-wrap input[type="range"]::-webkit-slider-thumb:hover {
+                    box-shadow: 0 2px 10px rgba(26,58,92,0.35);
+                }
+
+            .filtre-cizgi-wrap input[type="range"]::-moz-range-thumb {
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: var(--ege-orta);
+                cursor: pointer;
+                pointer-events: auto;
+                border: 3px solid var(--beyaz);
+                box-shadow: 0 2px 6px rgba(26,58,92,0.25);
+            }
+
+    .filtre-degerler {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--ege-koyu);
+        margin-top: 0.8rem;
+    }
+
+        .filtre-degerler span {
+            background: var(--ege-cok-acik);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+        }
+
+    .filtre-uygula-btn {
+        width: 100%;
+        margin-top: 1.8rem;
+        background: linear-gradient(135deg, var(--ege-orta), var(--ege-koyu));
+        color: var(--beyaz);
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.85rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 0.3px;
+    }
+
+        .filtre-uygula-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46,109,164,0.35);
+        }
+
+        .filtre-uygula-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+        }
+
+    @@media (max-width: 768px) {
+        .oda-sayfa-duzeni {
+            flex-direction: column;
+        }
+
+        .filtre-panel {
+            width: 100%;
+            position: static;
+        }
+    }
+</style>
+
+<div id="odalarView">
+
+    <div class="odalar-hero">
+        <div class="container">
+            <h1>🛏️ Odalarımız</h1>
+            <p>Fethiye'nin eşsiz manzarasına karşı konforlu konaklama seçenekleri</p>
+        </div>
+    </div>
+
+    <section class="bolum" style="background: var(--kum);">
+        <div class="container">
+
+            @if (uyeGiris)
+            {
+                <div style="
+            background: #e8f5e9;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: #2e7d32;
+            margin: 15px auto;
+            max-width: 600px;
+        ">
+                    🎉 Üye girişi yaptınız! Tüm odalarda <strong>%10 indirim</strong> otomatik uygulandı.
+                </div>
+            }
+
+            <div class="oda-selector" id="odaSelector">
+                <div class="oda-selector-text" id="odaSelectorText">🏠 Tüm Odalar</div>
+                <div class="oda-selector-dropdown" id="odaSelectorDropdown">
+                    <div class="oda-selector-option" data-tip="tumu"><span class="oda-emoji">🏠</span> Tüm Odalar</div>
+                    <div class="oda-selector-option" data-tip="standart"><span class="oda-emoji">🛏️</span> Standart Oda</div>
+                    <div class="oda-selector-option" data-tip="suit"><span class="oda-emoji">🌅</span> Suit Oda</div>
+                    <div class="oda-selector-option" data-tip="deluxe"><span class="oda-emoji">✨</span> Deluxe Oda</div>
+                    <div class="oda-selector-option" data-tip="aile"><span class="oda-emoji">👨‍👩‍👧‍👦</span> Aile Odası</div>
+                </div>
+            </div>
+
+            <div class="oda-sayfa-duzeni">
+                <div class="oda-grid-alani">
+                    <div id="kupAlani">
+                        <div class="kup-grid" id="kupGrid"></div>
+                    </div>
+                </div>
+
+                <div class="filtre-panel" id="filtrePanel">
+                    <div class="filtre-ust-baslik">Filtreler</div>
+                    <div class="filtre-alt-baslik">💰 Fiyat Filtresi</div>
+                    <div class="filtre-cizgi-wrap">
+                        <div class="filtre-cizgi"></div>
+                        <input type="range" id="filtreMin" min="0" max="10000" value="0" step="100" />
+                        <input type="range" id="filtreMax" min="0" max="10000" value="10000" step="100" />
+                    </div>
+                    <div class="filtre-degerler">
+                        <span id="filtreMinDeger">0 ₺</span>
+                        <span id="filtreMaxDeger">0 ₺</span>
+                    </div>
+                    <div class="filtre-alt-baslik" style="margin-top: 0.8rem;">👥 Kişi Sayısı</div>
+                    <div class="filtre-cizgi-wrap">
+                        <div class="filtre-cizgi"></div>
+                        <input type="range" id="kisiMin" min="1" max="6" value="1" step="1" />
+                        <input type="range" id="kisiMax" min="1" max="6" value="6" step="1" />
+                    </div>
+                    <div class="filtre-degerler">
+                        <span id="kisiMinDeger">1</span>
+                        <span id="kisiMaxDeger">6</span>
+                    </div>
+                    <button class="filtre-uygula-btn" id="filtreUygula">Filtreyi Uygula</button>
+                </div>
+            </div>
+
+            @if (!uyeGiris)
+            {
+                <div class="text-center mt-5 p-4" id="uyeDavet"
+                     style="background: var(--beyaz); border-radius: 20px; box-shadow: 0 4px 20px rgba(26,58,92,0.08);">
+                    <p style="font-size:1.05rem; color: var(--metin-orta); margin-bottom: 1rem;">
+                        🎁 <strong>Üye girişi yaparak tüm odalarda %10 indirim kazanın!</strong>
+                    </p>
+                    <a href="/Home/Giris" class="btn-rezervasyon">🔑 Üye Girişi Yap</a>
+                </div>
+            }
+
+        </div>
+    </section>
+
+</div>
+
+<div id="detayView"></div>
+
+@section Scripts {
+    <script>
+        var uyeGiris = @Html.Raw(Json.Serialize(ViewBag.UyeGiris));
+        var odaTipleri = {
+            standart: {
+                ad: "Standart Oda",
+                emoji: "🛏️",
+                odalar: [
+                    { id: "s1", ad: "Standart 101",fiyat: uyeGiris ? 1200 * 0.9 : 1200, m2: 25, kisi: 1, resim: "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869625.jpg", gorseller: ["https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869625.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869626.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869624.jpg"] },
+                    { id: "s2", ad: "Standart 102", fiyat: uyeGiris ? 1300 * 0.9 : 1300, m2: 28, kisi: 1, resim: "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869651.jpg", gorseller: ["https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869651.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869650.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869624.jpg"] },
+                    { id: "s3", ad: "Standart 103", fiyat: uyeGiris ? 1250 * 0.9 : 1250, m2: 26, kisi: 2, resim: "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869620.jpg", gorseller: ["https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869620.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869619.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869621.jpg"] },
+                    { id: "s4", ad: "Standart 104", fiyat: uyeGiris ? 1400 * 0.9 : 1400, m2: 30, kisi: 2, resim: "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869619.jpg", gorseller: ["https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869619.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869620.jpg", "https://productcdn.tatilbudur.com/Otel/gallery/the-green-park-hotels-resort-sapanca_19050_869621.jpg"] }
+                ]
+            },
+            suit: {
+                ad: "Suit Oda",
+                emoji: "🌅",
+                odalar: [
+                    { id: "su1", ad: "Suit 201",fiyat: uyeGiris ? 2500 * 0.9 : 2500, m2: 40, kisi: 1, resim: "https://www.dedeman.com/assets/upload/room/grand-deluxe-twin-1.jpg", gorseller: ["https://www.dedeman.com/assets/upload/room/grand-deluxe-twin-1.jpg", "https://www.dedeman.com/assets/upload/room/grand-deluxe-twin-3.jpg", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898553.webp"] },
+                    { id: "su2", ad: "Suit 202", fiyat: uyeGiris ? 2700 * 0.9 : 2700, m2: 42, kisi: 2, resim: "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898515.webp", gorseller: ["https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898515.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898522.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898571.webp"] },
+                    { id: "su3", ad: "Suit 203", fiyat: uyeGiris ? 2600 * 0.9 : 2600, m2: 45, kisi: 2, resim: "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898523.webp", gorseller: ["https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898523.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898530.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898569.webp"] },
+                    { id: "su4", ad: "Suit 204",fiyat: uyeGiris ? 3000 * 0.9 : 3000, m2: 48, kisi: 2, resim: "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898529.webp", gorseller: ["https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898529.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898515.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898571.webp"] },
+                    { id: "su5", ad: "Suit 301", fiyat: uyeGiris ? 3200 * 0.9 : 3200,m2: 55, kisi: 2, resim: "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898522.webp", gorseller: ["https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898522.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898529.webp", "https://cdn3.enuygun.com/media/lib/1x1080/uploads/image/lazlakar-rize-oda-78898553.webp"] }
+                ]
+            },
+            deluxe: {
+                ad: "Deluxe Oda",
+                emoji: "✨",
+                odalar: [
+                    { id: "d1", ad: "Deluxe 401",fiyat: uyeGiris ? 3800 * 0.9 : 3800, m2: 50, kisi: 2, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-standart-gol-manzarali-27683773.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-standart-gol-manzarali-27683773.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-standart-gol-manzarali-27683771.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-standart-gol-manzarali-27683769.webp"] },
+                    { id: "d2", ad: "Deluxe 402", fiyat:uyeGiris ? 4000 * 0.9 : 4000, m2: 52, kisi: 2, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-deluxe-gol-odasi-27683779.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-deluxe-gol-odasi-27683779.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-deluxe-gol-odasi-27683781.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-deluxe-gol-odasi-27683777.webp"] },
+                    { id: "d3", ad: "Deluxe 501", fiyat:uyeGiris ? 4200 * 0.9 : 4200, m2: 58, kisi: 3, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312518-jpg-32312394.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312518-jpg-32312394.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312525-jpg-32312392.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312520-jpg-32312393.webp"] },
+                    { id: "d4", ad: "Deluxe 502", fiyat: uyeGiris ? 4500 * 0.9 : 4500, m2: 62, kisi: 3, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-genel-312315-jpg-32312953.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-genel-312315-jpg-32312953.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-genel-312324-jpg-32312954.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-genel-312319-jpg-32312955.webp"] },
+                    { id: "d5", ad: "Deluxe 503", fiyat: uyeGiris ? 4800 * 0.9 : 4800, m2: 65, kisi: 3, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312527-jpg-32313810.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312527-jpg-32313810.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312526-jpg-32313809.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312524-jpg-32313811.webp"] },
+                    { id: "d6", ad: "Deluxe 601", fiyat: uyeGiris ? 5000 * 0.9 : 5000, m2: 70, kisi: 3, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312509-jpg-32314637.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312509-jpg-32314637.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312506-jpg-32314634.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/buyuk-abant-i-bolu-https-images-etstur-com-files-images-images-tr-51082-l-buyuk-abant-oda-312503-jpg-32314635.webp"] }
+                ]
+            },
+            aile: {
+                ad: "Aile Odası",
+                emoji: "👨‍👩‍👧‍👦",
+                odalar: [
+                    { id: "a1", ad: "Aile 301", fiyat:  uyeGiris ? 4200 * 0.9 : 4200, m2: 60, kisi: 4, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-oda-26774420.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-oda-26774420.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-oda-26774421.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-oda-26774422.webp"] },
+                    { id: "a2", ad: "Aile 302", fiyat:  uyeGiris ? 4500 * 0.9 : 4500, m2: 65, kisi: 4, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-deluxe-oda-26774457.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-deluxe-oda-26774457.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-deluxe-oda-26774458.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-single-deluxe-oda-26774459.webp"] },
+                    { id: "a3", ad: "Aile 303", fiyat:  uyeGiris ? 4800 * 0.9 : 4800, m2: 68, kisi: 6, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-triple-deluxe-oda-26774484.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-triple-deluxe-oda-26774484.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-triple-deluxe-oda-26774486.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-triple-deluxe-oda-26774487.webp"] },
+                    { id: "a4", ad: "Aile 304", fiyat:  uyeGiris ? 5000 * 0.9 : 5000, m2: 72, kisi: 6, resim: "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-double-oda-26774430.webp", gorseller: ["https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-double-oda-26774430.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-double-oda-26774429.webp", "https://cdn3.enuygun.com/r/media/lib/1x420/uploads/image/ng-sapanca-sakarya-superior-triple-deluxe-oda-26774487.webp"] }
+                ]
+            }
+        };
+
+        // Ortak ozellikler (tum odalarda gosterilir)
+        var ortakOzellikler = [
+            "❄️ Klima (Isıtma/Soğutma)",
+            "📶 Ücretsiz Yüksek Hızlı WiFi",
+            "🍳 Açık Büfe Kahvaltı Dahil",
+            "📺 Smart LCD TV (50\")",
+            "🚿 Özel Banyo & Duş",
+            "☕ Çay / Kahve Makinesi",
+            "🧴 Özel Banyo Ürünleri",
+            "🔒 Elektronik Kasa"
+        ];
+
+        // Oda tipine ozgu ek ozellikler (detayda gosterilir)
+        var odaEkOzellikler = {
+            standart: [],
+            suit: ["🛁 Küvet / Jakuzi", "🌿 Minibar"],
+            deluxe: ["🛁 Küvet / Jakuzi", "🌿 Minibar", "🍾 Karşılama İçeceği", "💆 SPA İndirimi (%20)"],
+            aile: ["👶 Bebek Yatağı (Talep Üzerine)", "🎮 Oyun Konsolu"]
+        };
+
+        // Oda kapasiteleri (kisi sayisi)
+        var odaKapasite = {
+            standart: { min: 1, max: 2 },
+            suit:     { min: 1, max: 2 },
+            deluxe:   { min: 1, max: 3 },
+            aile:     { min: 2, max: 6 }
+        };
+        // KULLANICI VERILERI SONU
+
+        var selector = document.getElementById("odaSelector");
+        var textBox = document.getElementById("odaSelectorText");
+        var dropdown = document.getElementById("odaSelectorDropdown");
+        var kupAlani = document.getElementById("kupAlani");
+        var kupGrid = document.getElementById("kupGrid");
+        var odaView = document.getElementById("odalarView");
+        var detayView = document.getElementById("detayView");
+        var uyeDavet = document.getElementById("uyeDavet");
+        var gizleTimeout = null;
+
+        var seciliTip = null;
+        var seciliOda = null;
+        var oncekiGoruntu = "tumu";
+
+        // --- FILTRE ---
+        var filtreMinInput = document.getElementById("filtreMin");
+        var filtreMaxInput = document.getElementById("filtreMax");
+        var filtreMinDegerSpan = document.getElementById("filtreMinDeger");
+        var filtreMaxDegerSpan = document.getElementById("filtreMaxDeger");
+        var filtreUygulaBtn = document.getElementById("filtreUygula");
+        var filtreAktif = false;
+        var filtreMinVal = 0, filtreMaxVal = 10000;
+
+        var kisiMinInput = document.getElementById("kisiMin");
+        var kisiMaxInput = document.getElementById("kisiMax");
+        var kisiMinDegerSpan = document.getElementById("kisiMinDeger");
+        var kisiMaxDegerSpan = document.getElementById("kisiMaxDeger");
+        var kisiMinVal = 1, kisiMaxVal = 6;
+
+        function tumOdalariGetir() {
+            var sonuc = [];
+            for (var katAdi in odaTipleri) {
+                var kat = odaTipleri[katAdi];
+                for (var i = 0; i < kat.odalar.length; i++) {
+                    sonuc.push({ oda: kat.odalar[i], tip: katAdi });
+                }
+            }
+            return sonuc;
+        }
+
+        function filtreAralikGuncelle() {
+            var min = Infinity, max = -Infinity;
+            var kMin = Infinity, kMax = -Infinity;
+            var hepsi = tumOdalariGetir();
+            for (var i = 0; i < hepsi.length; i++) {
+                var f = hepsi[i].oda.fiyat;
+                if (f < min) min = f;
+                if (f > max) max = f;
+            }
+            // kisi araligi odaKapasite'den
+            for (var tip in odaKapasite) {
+                if (odaKapasite[tip].min < kMin) kMin = odaKapasite[tip].min;
+                if (odaKapasite[tip].max > kMax) kMax = odaKapasite[tip].max;
+            }
+
+            filtreMinInput.min = min;
+            filtreMinInput.max = max;
+            filtreMaxInput.min = min;
+            filtreMaxInput.max = max;
+
+            kisiMinInput.min = kMin;
+            kisiMinInput.max = kMax;
+            kisiMaxInput.min = kMin;
+            kisiMaxInput.max = kMax;
+
+            if (seciliTip) {
+                var kat = odaTipleri[seciliTip];
+                var pMin = Infinity, pMax = -Infinity;
+                for (var i = 0; i < kat.odalar.length; i++) {
+                    var f = kat.odalar[i].fiyat;
+                    if (f < pMin) pMin = f;
+                    if (f > pMax) pMax = f;
+                }
+                filtreMinInput.min = pMin;
+                filtreMinInput.max = pMax;
+                filtreMaxInput.min = pMin;
+                filtreMaxInput.max = pMax;
+                kisiMinInput.min = odaKapasite[seciliTip].min;
+                kisiMinInput.max = odaKapasite[seciliTip].max;
+                kisiMaxInput.min = odaKapasite[seciliTip].min;
+                kisiMaxInput.max = odaKapasite[seciliTip].max;
+            }
+
+            if (!filtreAktif) {
+                filtreMinInput.value = parseInt(filtreMinInput.min);
+                filtreMaxInput.value = parseInt(filtreMaxInput.max);
+                filtreMinVal = parseInt(filtreMinInput.value);
+                filtreMaxVal = parseInt(filtreMaxInput.value);
+                kisiMinInput.value = parseInt(kisiMinInput.min);
+                kisiMaxInput.value = parseInt(kisiMaxInput.max);
+                kisiMinVal = parseInt(kisiMinInput.value);
+                kisiMaxVal = parseInt(kisiMaxInput.value);
+            } else {
+                filtreMinInput.value = filtreMinVal;
+                filtreMaxInput.value = filtreMaxVal;
+                kisiMinInput.value = kisiMinVal;
+                kisiMaxInput.value = kisiMaxVal;
+            }
+
+            filtreMinDegerSpan.textContent = parseInt(filtreMinInput.value).toLocaleString('tr-TR') + " ₺";
+            filtreMaxDegerSpan.textContent = parseInt(filtreMaxInput.value).toLocaleString('tr-TR') + " ₺";
+            kisiMinDegerSpan.textContent = parseInt(kisiMinInput.value);
+            kisiMaxDegerSpan.textContent = parseInt(kisiMaxInput.value);
+        }
+
+        function filtreleOdalari(odaList, minF, maxF, minK, maxK) {
+            var sonuc = [];
+            for (var i = 0; i < odaList.length; i++) {
+                var o = odaList[i].oda;
+                var tip = odaList[i].tip;
+                var cap = odaKapasite[tip];
+                if (o.fiyat >= minF && o.fiyat <= maxF && cap.min <= maxK && cap.max >= minK) {
+                    sonuc.push(odaList[i]);
+                }
+            }
+            return sonuc;
+        }
+
+        function filtreyiUygula() {
+            var minF = parseInt(filtreMinInput.value);
+            var maxF = parseInt(filtreMaxInput.value);
+            var stepF = parseInt(filtreMinInput.step || 100);
+            if (minF >= maxF) { minF = Math.max(parseInt(filtreMinInput.min), maxF - stepF); maxF = minF + stepF; }
+            filtreMinVal = minF;
+            filtreMaxVal = maxF;
+
+            var minK = parseInt(kisiMinInput.value);
+            var maxK = parseInt(kisiMaxInput.value);
+            if (minK >= maxK) { minK = Math.max(parseInt(kisiMinInput.min), maxK - 1); maxK = minK + 1; }
+            kisiMinVal = minK;
+            kisiMaxVal = maxK;
+
+            filtreAktif = true;
+
+            if (seciliTip) {
+                kupGoster(seciliTip);
+            } else {
+                tumOdalariGoster();
+            }
+        }
+
+        // --- DROPDOWN OPACITY ---
+        function acDropdown() {
+            if (gizleTimeout) { clearTimeout(gizleTimeout); gizleTimeout = null; }
+            dropdown.classList.add("acik");
+        }
+        function gizleDropdown() {
+            if (gizleTimeout) clearTimeout(gizleTimeout);
+            gizleTimeout = setTimeout(function() { dropdown.classList.remove("acik"); }, 1000);
+        }
+        textBox.addEventListener("mouseenter", acDropdown);
+        textBox.addEventListener("mouseleave", gizleDropdown);
+        dropdown.addEventListener("mouseenter", function() {
+            if (gizleTimeout) { clearTimeout(gizleTimeout); gizleTimeout = null; }
+            dropdown.classList.add("acik");
+        });
+        dropdown.addEventListener("mouseleave", gizleDropdown);
+
+        // --- KUP GRID RENDER ---
+        function kupHtml(oda, tipAdi) {
+            var gorselIc;
+            if (oda.resim && oda.resim.trim() !== "") {
+                gorselIc = "<img src='" + oda.resim + "' alt='" + oda.ad + "' />";
+            } else {
+                gorselIc = "🖼️ görsel yok";
+            }
+
+            return "<div class='kup-kart'>" +
+                "<div class='kup-gorsel'>" + gorselIc + "</div>" +
+                "<div class='kup-bilgi'>" +
+                    "<span class='kup-fiyat'>" + Number(oda.fiyat).toLocaleString('tr-TR') + " ₺</span>" +
+                    "<span class='kup-m2'>📐 " + oda.m2 + " m²</span>" +
+                "</div>" +
+                "<button class='kup-incele' data-oda-id='" + oda.id + "' data-tip='" + tipAdi + "'>🔍 Odayı İncele</button>" +
+            "</div>";
+        }
+
+        function kupGoster(tipAdi) {
+            var tip = odaTipleri[tipAdi];
+            if (!tip) return;
+
+            seciliTip = tipAdi;
+            oncekiGoruntu = tipAdi;
+            detayView.classList.remove("goster");
+            detayView.innerHTML = "";
+
+            odaView.style.display = "";
+            document.body.style.overflow = "";
+
+            kupGrid.innerHTML = "";
+            for (var i = 0; i < tip.odalar.length; i++) {
+                var oda = tip.odalar[i];
+                if (filtreAktif && (oda.fiyat < filtreMinVal || oda.fiyat > filtreMaxVal || odaKapasite[tipAdi].min > kisiMaxVal || odaKapasite[tipAdi].max < kisiMinVal)) continue;
+                kupGrid.innerHTML += kupHtml(oda, tipAdi);
+            }
+
+            if (uyeDavet) uyeDavet.style.display = "none";
+
+            var inceleBtns = kupGrid.querySelectorAll(".kup-incele");
+            for (var j = 0; j < inceleBtns.length; j++) {
+                (function(btn) {
+                    btn.addEventListener("click", function() {
+                        var odaId = this.getAttribute("data-oda-id");
+                        var tip = this.getAttribute("data-tip");
+                        detayGoster(tip, odaId);
+                    });
+                })(inceleBtns[j]);
+            }
+
+            filtreAralikGuncelle();
+        }
+
+        function tumOdalariGoster() {
+            seciliTip = null;
+            oncekiGoruntu = "tumu";
+            detayView.classList.remove("goster");
+            detayView.innerHTML = "";
+
+            odaView.style.display = "";
+            document.body.style.overflow = "";
+
+            kupGrid.innerHTML = "";
+            for (var katAdi in odaTipleri) {
+                var kat = odaTipleri[katAdi];
+                for (var i = 0; i < kat.odalar.length; i++) {
+                    var oda = kat.odalar[i];
+                    if (filtreAktif && (oda.fiyat < filtreMinVal || oda.fiyat > filtreMaxVal || odaKapasite[katAdi].min > kisiMaxVal || odaKapasite[katAdi].max < kisiMinVal)) continue;
+                    kupGrid.innerHTML += kupHtml(oda, katAdi);
+                }
+            }
+
+            var inceleBtns = kupGrid.querySelectorAll(".kup-incele");
+            for (var j = 0; j < inceleBtns.length; j++) {
+                (function(btn) {
+                    btn.addEventListener("click", function() {
+                        detayGoster(this.getAttribute("data-tip"), this.getAttribute("data-oda-id"));
+                    });
+                })(inceleBtns[j]);
+            }
+
+            filtreAralikGuncelle();
+        }
+
+        function geriDon() {
+            if (oncekiGoruntu === "tumu") {
+                tumOdalariGoster();
+            } else {
+                kupGoster(oncekiGoruntu);
+            }
+        }
+
+        // --- DETAY RENDER ---
+        function detayGoster(tipAdi, odaId) {
+            var tip = odaTipleri[tipAdi];
+            if (!tip) return;
+
+            var oda = null;
+            for (var i = 0; i < tip.odalar.length; i++) {
+                if (tip.odalar[i].id === odaId) { oda = tip.odalar[i]; break; }
+            }
+            if (!oda) return;
+
+            seciliOda = odaId;
+            odaView.style.display = "none";
+
+            var gorselIndex = 0;
+            var gorselHtml = function(idx) {
+                var g = oda.gorseller && oda.gorseller[idx] ? oda.gorseller[idx] : "Görsel Ekle";
+                return "<div class='galeri-item' style='height:100px; border-radius:12px; flex:1; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; color:var(--ege-koyu); cursor:pointer; " +
+                    (g && g.startsWith("http") ? "" : "background:var(--ege-cok-acik);") +
+                    "' onclick='gorselDegistir(\"" + oda.id + "\"," + idx + ")' data-gidx='" + idx + "'>" +
+                    (g && g.startsWith("http") ? "<img src='" + g + "' style='width:100%;height:100%;object-fit:cover;border-radius:12px;' />" : g) +
+                    "</div>";
+            };
+            var heroIc;
+            var ilkGorsel = oda.gorseller && oda.gorseller[0] ? oda.gorseller[0] : "Görsel Ekle";
+            if (ilkGorsel && ilkGorsel.startsWith("http")) {
+                heroIc = "<img id='detayAnaGorsel' src='" + ilkGorsel + "' alt='" + oda.ad + "' style='width:100%;height:100%;object-fit:cover;border-radius:20px;' />";
+            } else {
+                heroIc = "<div id='detayAnaGorsel' style='width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:var(--ege-koyu);'>" + ilkGorsel + "</div>";
+            }
+            var premium = (tipAdi === "suit" || tipAdi === "deluxe");
+            var premiumHtml = premium ? "<span class='feature-badge' style='background:var(--altin); color:var(--ege-koyu);'>⭐ Premium</span>" : "";
+
+            var ekOzellikler = odaEkOzellikler[tipAdi] || [];
+            var tumOz = ortakOzellikler.concat(ekOzellikler);
+            var ozHtml = "";
+            for (var k = 0; k < tumOz.length; k++) {
+                ozHtml += "<li>" + tumOz[k] + "</li>";
+            }
+
+            var uyeDavetHtml = "";
+            if (document.getElementById("uyeDavet")) {
+                uyeDavetHtml = "<div class='text-center mt-5 p-4' style='background:var(--beyaz); border-radius:20px; box-shadow:0 4px 20px rgba(26,58,92,0.08); max-width:700px; margin:2rem auto;'>" +
+                    "<p style='font-size:1.05rem; color:var(--metin-orta); margin-bottom:1rem;'>" +
+                    "🎁 <strong>Üye girişi yaparak tüm odalarda %10 indirim kazanın!</strong></p>" +
+                    "<a href='/Home/Giris' class='btn-rezervasyon'>🔑 Üye Girişi Yap</a></div>";
+            }
+
+            detayView.innerHTML =
+                "<div class='bolum' style='background:var(--kum);'>" +
+                    "<div class='container'>" +
+                        "<button class='detay-view-back' onclick='geriDon()'>← Geri Dön</button>" +
+                        "<div class='row g-4 align-items-start'>" +
+                            "<div class='col-lg-6'>" +
+                                "<div class='oda-detay-hero-foto' style='overflow:hidden;'>" + heroIc + "</div>" +
+                                "<div class='row g-2 mt-2' id='galeriKucukler'>" +
+                                    "<div class='col-4'>" + gorselHtml(0) + "</div>" +
+                                    "<div class='col-4'>" + gorselHtml(1) + "</div>" +
+                                    "<div class='col-4'>" + gorselHtml(2) + "</div>" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class='col-lg-6'>" +
+                                "<div class='detay-info-card'>" +
+                                    "<h1>" + oda.ad + "</h1>" +
+                                    "<div style='display:flex; gap:0.8rem; margin:0.8rem 0 1.2rem; flex-wrap:wrap;'>" +
+                                        premiumHtml +
+                                        "<span class='feature-badge'>👥 " + odaKapasite[tipAdi].min + "-" + odaKapasite[tipAdi].max + " Kişi</span>" +
+                                        "<span class='feature-badge'>📐 " + oda.m2 + " m²</span>" +
+                                        "<span class='feature-badge'>🌊 Deniz Manzarası</span>" +
+                                    "</div>" +
+                                    "<p style='color:var(--metin-orta); line-height:1.8; margin-bottom:1.5rem; font-size:1rem;'>" +
+                                        tip.ad + " kategorisindeki " + oda.ad + " odamız, size eşsiz bir konaklama deneyimi sunmak için özenle hazırlanmıştır." +
+                                    "</p>" +
+                                    "<h5 style='color:var(--ege-koyu); margin-bottom:1rem; font-size:1.05rem;'>🏠 Oda Özellikleri</h5>" +
+                                    "<ul class='detay-ozellik-listesi'>" + ozHtml + "</ul>" +
+                                    "<div style='background:var(--ege-cok-acik); border-radius:14px; padding:1.2rem 1.5rem; margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;'>" +
+                                        "<div>" +
+                                            "<div style='font-size:0.85rem; color:var(--metin-orta);'>Gecelik fiyat</div>" +
+                                            "<div class='fiyat-yeni' style='font-size:2rem;'>" + Number(oda.fiyat).toLocaleString('tr-TR') + " ₺ <span>/ gece</span></div>" +
+                                        "</div>" +
+                                        "<div style='font-size:0.8rem; color:var(--metin-orta); max-width:180px;'>✅ Ücretsiz iptal (3 gün öncesine kadar)</div>" +
+                                    "</div>" +
+                                    "<a href='/Home/Rezervasyon?odaTipi=" + encodeURIComponent(tipAdi) + "' class='btn-ayirt'>📋 Bu Odayı Ayırt</a>" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                        uyeDavetHtml +
+                    "</div>" +
+                "</div>";
+
+            detayView.classList.add("goster");
+            detayView.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        var gorselIndex = 0;
+        function gorselDegistir(odaId, idx) {
+            gorselIndex = idx;
+            var oda = null;
+            for (var katAdi in odaTipleri) {
+                for (var i = 0; i < odaTipleri[katAdi].odalar.length; i++) {
+                    if (odaTipleri[katAdi].odalar[i].id === odaId) { oda = odaTipleri[katAdi].odalar[i]; break; }
+                }
+                if (oda) break;
+            }
+            if (!oda) return;
+            var g = oda.gorseller && oda.gorseller[idx] ? oda.gorseller[idx] : "Görsel Ekle";
+            var anaGorsel = document.getElementById("detayAnaGorsel");
+            if (anaGorsel) {
+                if (g && g.startsWith("http")) {
+                    anaGorsel.outerHTML = "<img id='detayAnaGorsel' src='" + g + "' alt='" + oda.ad + "' style='width:100%;height:100%;object-fit:cover;border-radius:20px;' />";
+                } else {
+                    anaGorsel.outerHTML = "<div id='detayAnaGorsel' style='width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:var(--ege-koyu);'>" + g + "</div>";
+                }
+            }
+        }
+
+        // --- DROPDOWN SECIM ---
+        var optionlar = document.querySelectorAll(".oda-selector-option");
+        for (var i = 0; i < optionlar.length; i++) {
+            (function(opt) {
+                opt.addEventListener("click", function() {
+                    var tip = this.getAttribute("data-tip");
+
+                    for (var j = 0; j < optionlar.length; j++)
+                        optionlar[j].classList.remove("secili");
+                    this.classList.add("secili");
+
+                    if (tip === "tumu") {
+                        textBox.innerHTML = "🏠 Tüm Odalar";
+                        dropdown.classList.remove("acik");
+                        filtreAktif = false;
+                        tumOdalariGoster();
+                    } else {
+                        textBox.innerHTML = odaTipleri[tip].emoji + " " + odaTipleri[tip].ad;
+                        dropdown.classList.remove("acik");
+                        filtreAktif = false;
+                        kupGoster(tip);
+                    }
+                });
+            })(optionlar[i]);
+        }
+
+        // --- SAYFA YUKLENINCE TUM ODALARI GOSTER ---
+        tumOdalariGoster();
+
+        // --- FILTRE OLAY DINLEYICILERI ---
+        filtreMinInput.addEventListener("input", function() {
+            var val = parseInt(this.value);
+            var maxVal = parseInt(filtreMaxInput.value);
+            var step = parseInt(this.step || 100);
+            if (val >= maxVal) this.value = Math.max(parseInt(this.min), maxVal - step);
+            filtreMinDegerSpan.textContent = parseInt(this.value).toLocaleString('tr-TR') + " ₺";
+        });
+
+        filtreMaxInput.addEventListener("input", function() {
+            var val = parseInt(this.value);
+            var minVal = parseInt(filtreMinInput.value);
+            var step = parseInt(filtreMaxInput.step || 100);
+            if (val <= minVal) this.value = Math.min(parseInt(this.max), minVal + step);
+            filtreMaxDegerSpan.textContent = parseInt(this.value).toLocaleString('tr-TR') + " ₺";
+        });
+
+        filtreUygulaBtn.addEventListener("click", filtreyiUygula);
+
+        kisiMinInput.addEventListener("input", function() {
+            var val = parseInt(this.value);
+            var maxVal = parseInt(kisiMaxInput.value);
+            if (val >= maxVal) this.value = Math.max(parseInt(this.min), maxVal - 1);
+            kisiMinDegerSpan.textContent = parseInt(this.value);
+        });
+
+        kisiMaxInput.addEventListener("input", function() {
+            var val = parseInt(this.value);
+            var minVal = parseInt(kisiMinInput.value);
+            if (val <= minVal) this.value = Math.min(parseInt(this.max), minVal + 1);
+            kisiMaxDegerSpan.textContent = parseInt(this.value);
+        });
+    </script>
+    <script>
+        var uyeGiris = @Html.Raw(Json.Serialize(ViewBag.UyeGiris));
+    </script>
+}

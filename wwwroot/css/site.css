@@ -1,0 +1,1078 @@
+﻿/* ============================
+   LİKYA INN - SITE.CSS
+   Ege Mavisi Tema
+   ============================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@300;400;600&display=swap');
+
+/* ---- Renk Değişkenleri ---- */
+:root {
+    --ege-koyu: #1a3a5c; /* Koyu lacivert mavi */
+    --ege-orta: #2e6da4; /* Ana mavi */
+    --ege-acik: #5ba4cf; /* Açık mavi */
+    --ege-cok-acik: #d0e8f5; /* Çok açık mavi (arka plan vurgular) */
+    --kum: #f5f0e8; /* Kum rengi arka plan */
+    --kum-koyu: #e8dfc8; /* Koyu kum (input border) */
+    --beyaz: #ffffff;
+    --metin-koyu: #1a2d40; /* Başlık metinleri */
+    --metin-orta: #4a6275; /* Gövde metinleri */
+    --altin: #c9a84c; /* Altın sarısı (vurgu butonlar) */
+    --hata: #e05c5c; /* Hata kırmızı */
+    --basari: #3a9e6e; /* Başarı yeşil */
+}
+
+/* ---- Genel Sıfırlama ---- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--kum);
+    color: var(--metin-koyu);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Başlıklar serif font kullanır */
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ============================
+   NAVBAR
+   ============================ */
+
+.navbar {
+    background: linear-gradient(135deg, var(--ege-koyu) 0%, var(--ege-orta) 100%);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 3px 15px rgba(26, 58, 92, 0.4);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: var(--beyaz) !important;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+    .navbar-brand .logo-icon {
+        font-size: 1.8rem;
+    }
+
+.navbar-nav .nav-link {
+    color: rgba(255,255,255,0.85) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: var(--beyaz) !important;
+        background: rgba(255,255,255,0.15);
+    }
+
+/* Admin butonu altın sarısı */
+.btn-admin {
+    background: var(--altin) !important;
+    color: var(--ege-koyu) !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.85rem !important;
+    transition: all 0.2s ease;
+}
+
+    .btn-admin:hover {
+        background: #e8c05a !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(201,168,76,0.4);
+    }
+
+/* Mobil hamburger menü rengi */
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.3);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.85%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* HERO (Index Ana Sayfa) */
+
+.ust-bolum {
+    background: linear-gradient(160deg, var(--ege-koyu) 0%, var(--ege-orta) 50%, var(--ege-acik) 100%);
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 1rem;
+}
+
+    /*  dalga  */
+    .ust-bolum::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23f5f0e8' d='M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z'/%3E%3C/svg%3E") no-repeat bottom;
+        background-size: cover;
+    }
+
+.ust-icerik {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+}
+
+
+.ust-logo-icon {
+    font-size: 4.5rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.ust-baslik {
+    font-size: clamp(2.5rem, 6vw, 4rem); /* Ekran boyutuna göre otomatik büyür */
+    color: var(--beyaz);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-shadow: 0 3px 15px rgba(0,0,0,0.3);
+    margin-bottom: 0.3rem;
+}
+
+.ust-altbaslik {
+    font-size: 1.1rem;
+    color: var(--ege-cok-acik);
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* Altın çizgi ayraç */
+.ust-ayrac {
+    width: 80px;
+    height: 2px;
+    background: var(--altin);
+    margin: 1.2rem auto;
+}
+
+.ust-aciklama {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 2.5rem;
+    font-style: italic;
+}
+
+.ust-butonlar {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Altın "Rezervasyon" butonu */
+.btn-rezervasyon {
+    background: var(--altin);
+    color: var(--ege-koyu);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.85rem 2.2rem;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(201,168,76,0.4);
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+    .btn-rezervasyon:hover {
+        background: #e8c05a;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(201,168,76,0.5);
+        color: var(--ege-koyu);
+    }
+
+/* Şeffaf "Üye Girişi" butonu */
+.btn-giris {
+    background: transparent;
+    color: var(--beyaz);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.85rem 2.2rem;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+    .btn-giris:hover {
+        background: rgba(255,255,255,0.15);
+        border-color: var(--beyaz);
+        transform: translateY(-3px);
+        color: var(--beyaz);
+    }
+
+/* GENEL SECTION YAPISI*/
+
+.bolum {
+    padding: 5rem 0;
+}
+
+.bolum-baslik {
+    font-size: 2.2rem;
+    color: var(--ege-koyu);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+/* Başlık altı altın çizgi */
+.bolum-ayrac {
+    width: 60px;
+    height: 3px;
+    background: var(--altin);
+    margin: 0.8rem auto 2.5rem;
+    border-radius: 2px;
+}
+
+/* GALERİ (Index) */
+
+.galeri-grid 
+{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+.galeri-item {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(26,58,92,0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #cce5f5, #a8d0ed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: var(--ege-orta);
+    cursor: pointer;
+    position: relative;
+}
+
+    .galeri-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 35px rgba(26,58,92,0.2);
+    }
+    .galeri-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 20px;
+        transition: 0.4s;
+    }
+    .galeri-item:hover img {
+        transform: scale(1.05);
+    }
+    
+/* Fotoğraf alt yazı */
+.galeri-etiket {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.7rem 1rem;
+    background: linear-gradient(transparent, rgba(26,58,92,0.8));
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/*HAKKIMIZDA KARTI (Index)*/
+
+.hakkimizda-kart {
+    background: var(--beyaz);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 30px rgba(26,58,92,0.08);
+    border-left: 5px solid var(--ege-orta); /* Sol mavi çizgi */
+}
+
+    .hakkimizda-kart p {
+        font-size: 1.05rem;
+        color: var(--metin-orta);
+        line-height: 1.9;
+        margin-bottom: 1rem;
+    }
+
+.hakkimizda-ozellikler {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Özellik etiketleri (WiFi, Havuz vb.) */
+.ozellik-etiket {
+    background: var(--ege-cok-acik);
+    color: var(--ege-koyu);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/*İLETİŞİM KARTLARI (Index)*/
+
+.iletisim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.iletisim-kart {
+    background: var(--beyaz);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(26,58,92,0.08);
+    transition: transform 0.2s ease;
+}
+
+    .iletisim-kart:hover {
+        transform: translateY(-4px);
+    }
+
+.iletisim-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.iletisim-kart h5 {
+    color: var(--ege-koyu);
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+}
+
+.iletisim-kart p {
+    color: var(--metin-orta);
+    font-size: 0.95rem;
+}
+
+/* Harita yer tutucu */
+.harita-alani {
+    background: linear-gradient(135deg, var(--ege-cok-acik), #b8daf0);
+    border-radius: 20px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--ege-koyu);
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(26,58,92,0.1);
+    border: 2px dashed var(--ege-acik);
+}
+
+
+.harita-alani {
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+/*GİRİŞ SAYFASI*/
+
+.giris-kapsayici {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--ege-cok-acik) 0%, var(--kum) 100%);
+    padding: 2rem;
+}
+
+.giris-kart {
+    background: var(--beyaz);
+    border-radius: 24px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 60px rgba(26,58,92,0.15);
+    text-align: center;
+}
+
+.giris-ikon {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.giris-kart h2 {
+    color: var(--ege-koyu);
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.giris-kart .alt-yazi {
+    color: var(--metin-orta);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+/* FORM ELEMENTLERİ (Tüm Sayfalar)*/
+
+.form-group {
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--metin-koyu);
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+    }
+
+/* Input, select, textarea için ortak stil */
+.form-control {
+    width: 100%;
+    padding: 0.8rem 1.1rem;
+    border: 2px solid var(--kum-koyu);
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    color: var(--metin-koyu);
+    background: var(--kum);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+    /* Input odaklandığında mavi çerçeve */
+    .form-control:focus {
+        border-color: var(--ege-orta);
+        background: var(--beyaz);
+        box-shadow: 0 0 0 4px rgba(46,109,164,0.1);
+    }
+
+/* Select için ok ikonu */
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232e6da4' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+/* Mavi "Giriş Yap" butonu */
+.btn-giris-yap {
+    width: 100%;
+    background: linear-gradient(135deg, var(--ege-orta), var(--ege-koyu));
+    color: var(--beyaz);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.9rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+}
+
+    .btn-giris-yap:hover {
+        background: linear-gradient(135deg, var(--ege-acik), var(--ege-orta));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46,109,164,0.35);
+    }
+
+/* Hata mesajı kutusu (JS ile display:block yapılır) */
+.hata-mesaj {
+    background: #fdeaea;
+    color: var(--hata);
+    border: 1.5px solid #f5b3b3;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none; /* Başlangıçta gizli */
+}
+
+/* Başarı mesajı kutusu (JS ile display:block yapılır) */
+.success-banner {
+    background: linear-gradient(135deg, #d4f0e5, #a8e0c8);
+    color: var(--basari);
+    border: 1.5px solid #7ccfaa;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: none; /* Başlangıçta gizli */
+}
+
+/*ODALAR SAYFASI */
+
+/* Mavi başlık şeridi */
+.odalar-ust {
+    background: linear-gradient(135deg, var(--ege-koyu), var(--ege-orta));
+    padding: 4rem 0 2rem;
+    text-align: center;
+    color: var(--beyaz);
+}
+
+    .odalar-ust h1 {
+        font-size: 2.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .odalar-ust p {
+        color: var(--ege-cok-acik);
+        font-size: 1.05rem;
+    }
+
+/* %10 indirim sarı banner */
+.indirim-alani {
+    background: linear-gradient(135deg, #fff8e1, #fff3cc);
+    border: 2px solid var(--altin);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    color: #7a5c10;
+}
+
+/* Oda kartı dış çerçeve */
+.oda-kart {
+    background: var(--beyaz);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 6px 25px rgba(26,58,92,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+    .oda-kart:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 40px rgba(26,58,92,0.18);
+    }
+
+/* Oda üst fotoğraf alanı — her oda tipi farklı renk */
+.oda-foto {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    position: relative;
+}
+
+.oda-foto-standart {
+    background: linear-gradient(135deg, #cce5f5, #a8d0ed);
+}
+
+.oda-foto-suit {
+    background: linear-gradient(135deg, #d5e8f0, #b0cfe8);
+    color: var(--ege-koyu);
+}
+
+.oda-foto-deluxe {
+    background: linear-gradient(135deg, #e8d5b0, #dac090);
+    color: #7a5c10;
+}
+
+.oda-foto-aile {
+    background: linear-gradient(135deg, #c8e8d5, #a5d4ba);
+    color: #2a6e4a;
+}
+
+/* Sağ üst köşe etiketi (Popüler, Lüks vb.) */
+.oda-etiket {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--altin);
+    color: var(--ege-koyu);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Kart içerik alanı */
+.oda-icerik {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+    .oda-icerik h4 {
+        color: var(--ege-koyu);
+        font-size: 1.3rem;
+        margin-bottom: 0.4rem;
+    }
+
+.oda-aciklama {
+    color: var(--metin-orta);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Küçük özellik etiketleri (klima, wifi vb.) */
+.oda-ozellikler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.ozellik-etiket {
+    background: var(--ege-cok-acik);
+    color: var(--ege-koyu);
+    padding: 0.25rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.oda-fiyat {
+    margin-top: auto;
+    margin-bottom: 1rem;
+}
+
+/* Üzeri çizili eski fiyat */
+.fiyat-eski {
+    color: #aaa;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+/* İndirimli/normal fiyat */
+.fiyat-yeni {
+    color: var(--ege-koyu);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+}
+
+    .fiyat-yeni span {
+        font-size: 0.9rem;
+        font-family: 'Nunito', sans-serif;
+        color: var(--metin-orta);
+    }
+
+/* "Detayları Gör" butonu */
+.btn-detay {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--ege-orta), var(--ege-koyu));
+    color: var(--beyaz);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+    .btn-detay:hover {
+        background: linear-gradient(135deg, var(--ege-acik), var(--ege-orta));
+        transform: translateY(-1px);
+        color: var(--beyaz);
+        box-shadow: 0 5px 15px rgba(46,109,164,0.35);
+    }
+
+/*DETAY SAYFASI*/
+
+/* Büyük oda fotoğrafı alanı */
+.detay-hero-foto {
+    background: linear-gradient(135deg, var(--ege-cok-acik), #a8d0ed);
+    border-radius: 20px;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 30px rgba(26,58,92,0.12);
+}
+
+/* Sağ bilgi kutusu */
+.detay-info-card {
+    background: var(--beyaz);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 6px 25px rgba(26,58,92,0.08);
+}
+
+    .detay-info-card h1 {
+        color: var(--ege-koyu);
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+/* Özellik listesi grid düzeni */
+.detay-ozellik-listesi {
+    list-style: none;
+    margin: 1.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+}
+
+    .detay-ozellik-listesi li {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--ege-cok-acik);
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        color: var(--ege-koyu);
+        font-size: 0.9rem;
+    }
+
+/* "Bu Odayı Ayırt" altın butonu */
+.btn-ayirt {
+    background: var(--altin);
+    color: var(--ege-koyu);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(201,168,76,0.4);
+    display: inline-block;
+    margin-top: 1.5rem;
+}
+
+    .btn-ayirt:hover {
+        background: #e8c05a;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(201,168,76,0.5);
+        color: var(--ege-koyu);
+    }
+
+/*REZERVASYON FORMU */
+
+.rezervasyon-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.rezervasyon-card {
+    background: var(--beyaz);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(26,58,92,0.12);
+}
+
+    .rezervasyon-card h2 {
+        color: var(--ege-koyu);
+        font-size: 2rem;
+        margin-bottom: 0.3rem;
+        text-align: center;
+    }
+
+.rezervasyon-subtitle {
+    text-align: center;
+    color: var(--metin-orta);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+/* İki sütunlu form satırı (ad-soyad, tarih vb.) */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* "Ödemeye Geç" mavi butonu */
+.btn-odeme {
+    width: 100%;
+    background: linear-gradient(135deg, var(--ege-orta), var(--ege-koyu));
+    color: var(--beyaz);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 1rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+    .btn-odeme:hover {
+        background: linear-gradient(135deg, var(--ege-acik), var(--ege-orta));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46,109,164,0.35);
+    }
+
+/* ÖDEME / ONAY SAYFASI*/
+
+.onay-wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.onay-card {
+    background: var(--beyaz);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(26,58,92,0.12);
+    text-align: center;
+}
+
+.kart-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.onay-card h2 {
+    color: var(--ege-koyu);
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Kredi kartı görsel önizleme */
+.kart-gorsel {
+    background: linear-gradient(135deg, var(--ege-koyu), var(--ege-orta));
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    color: var(--beyaz);
+    text-align: left;
+    box-shadow: 0 8px 24px rgba(26,58,92,0.25);
+}
+
+    .kart-gorsel .kart-chip {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    /* Kart üzerindeki numara gösterimi */
+    .kart-gorsel .kart-no-display {
+        font-size: 1.3rem;
+        letter-spacing: 4px;
+        font-family: 'Courier New', monospace;
+        margin-bottom: 0.5rem;
+    }
+
+/*YILDIZ DEĞERLENDİRME */
+
+/* JS ile display:block yapılır */
+.degerlendirme-section {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Yıldızlar sağdan sola (row-reverse = CSS hover trick çalışır) */
+.yildiz-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.7rem;
+    margin: 1.5rem 0;
+    flex-direction: row-reverse;
+}
+
+    /* Radio butonları gizle, label'ları göster */
+    .yildiz-container input[type="radio"] {
+        display: none;
+    }
+
+    .yildiz-container label {
+        font-size: 2.8rem;
+        cursor: pointer;
+        color: #ccc;
+        transition: color 0.2s ease, transform 0.15s ease;
+    }
+
+        /* Hover'da o yıldız ve solundakiler altın olur */
+        .yildiz-container label:hover,
+        .yildiz-container label:hover ~ label,
+        .yildiz-container input[type="radio"]:checked ~ label {
+            color: var(--altin);
+        }
+
+        .yildiz-container label:hover {
+            transform: scale(1.2);
+        }
+
+/* Değerlendirme mesajları (JS ile gösterilir) */
+.degerlendirme-mesaj {
+    display: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+/* 5 yıldız → yeşil teşekkür */
+.mesaj-tesekkkur {
+    background: linear-gradient(135deg, #d4f0e5, #a8e0c8);
+    color: #1a6e47;
+    border: 1.5px solid #7ccfaa;
+}
+
+/* 1-4 yıldız → mavi geri bildirim */
+.mesaj-geri {
+    background: var(--ege-cok-acik);
+    color: var(--ege-koyu);
+    border: 1.5px solid var(--ege-acik);
+}
+
+/* Başarı tik ikonu zıplama animasyonu */
+.basari-icon {
+    font-size: 5rem;
+    animation: bounce 0.6s ease;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* FOOTER*/
+
+footer {
+    background: var(--ege-koyu);
+    color: rgba(255,255,255,0.8);
+    padding: 2.5rem 0 1.5rem;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-brand h4 {
+    color: var(--beyaz);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-brand p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.footer-section h5 {
+    color: var(--altin);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+}
+
+.footer-section p,
+.footer-section a {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    display: block;
+    margin-bottom: 0.3rem;
+    transition: color 0.2s;
+}
+
+    .footer-section a:hover {
+        color: var(--ege-cok-acik);
+    }
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 1.2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+}

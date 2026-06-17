@@ -1,0 +1,43 @@
+﻿<div style="display:flex;justify-content:center;align-items:center;height:70vh;">
+
+    <div style="width:400px;
+padding:30px;
+background:white;
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,0,0,0.15);">
+
+        <h2 style="text-align:center;margin-bottom:25px;">
+            Admin Girişi
+        </h2>
+
+        <form method="post">
+
+            <label>Kullanıcı Adı</label>
+            <input type="text"
+                   name="kullaniciAdi"
+                   class="form-control"
+                   style="margin-bottom:15px;" />
+
+            <label>Şifre</label>
+            <input type="password"
+                   name="sifre"
+                   class="form-control"
+                   style="margin-bottom:15px;" />
+
+            @if (ViewBag.Hata != null)
+            {
+                <div style="color:red;margin-bottom:15px;">
+                    @ViewBag.Hata
+                </div>
+            }
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+                Giriş Yap
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
